@@ -1,0 +1,46 @@
+{
+  "name": "mobcom",
+  "version": "1.0.0",
+  "description": "",
+  "main": "mobcom.js",
+  "scripts": {
+    "start": "nodemon mobcom.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "npm run lint --fix",
+    "lint2": "node_modules/.bin/eslint services/** --fix"
+  },
+  "author": "Aiware Tecnologia",
+  "license": "ISC",
+  "eslintIgnore": [
+    "node_modules"
+  ],
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "1.18.3",
+    "consign": "0.1.6",
+    "cors": "2.8.5",
+    "dateformat": "3.0.3",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "express": "4.17.1",
+    "express-validator": "6.3.0",
+    "fs": "0.0.1-security",
+    "ioredis": "4.14.1",
+    "jwt-simple": "0.5.5",
+    "knex": "0.19.4",
+    "mysql": "2.16.0",
+    "passport": "0.4.0",
+    "passport-jwt": "4.0.0",
+    "pg": "^7.18.2",
+    "prettier": "^1.19.1",
+    "redis": "2.8.0",
+    "uuidv4": "4.0.0",
+    "winston": "3.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.19.1",
+    "nodemon": "^1.19.1"
+  }
+}
