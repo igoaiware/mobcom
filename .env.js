@@ -1,5 +1,5 @@
 module.exports = {
   environment: "development",
 
-  authSecret: ""
+  authSecret: "adfasdfjçlkj1234097908a7dfnavijaospduy90q"
 };

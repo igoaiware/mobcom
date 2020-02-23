@@ -1,5 +1,4 @@
 module.exports = {
-  AUTHSECRET: "",
   PORT: 8180,
   REDIS: {
     db: 0,

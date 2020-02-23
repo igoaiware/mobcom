@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt-nodejs");
 const jwt = require("jwt-simple");
-const { authSecret } = require("../config/config");
+const { authSecret } = require("../../.env");
 const ValidationError = require("../class/ValidationError");
 const BaseClass = require("../class/baseClass");
 
