@@ -38,12 +38,12 @@ module.exports = app => {
         console.log(app.db.listConnections());
 
         // INSTANCIAR CLASSE DE MODELOS
-        const LocalidadeDAO = new app.services.models.citiesDAO.Localidade(
+        const LocalidadeRepo = new app.services.repository.citiesRepo.Localidade(
           db,
           this._schema
         );
 
-        const uf = await LocalidadeDAO.getUF();
+        const uf = await LocalidadeRepo.getUF();
 
         // SALVAR CACHE DE DADOS
         // await Repository.set("G_UF", JSON.parse(JSON.stringify(uf)));
