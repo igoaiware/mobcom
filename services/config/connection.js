@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 const knex = require("knex");
 const path = require("path");
 const fs = require("fs");
@@ -5,87 +6,102 @@ const ValidationError = require("../class/ValidationError");
 
 class Connection {
   constructor() {
-    this._database = "";
+    // this._database = "";
     this._knex = null;
-    this._countConnection = [];
+    this._poolConnection = [];
   }
 
-  listConnection() {
-    return this._countConnection.map(obj => obj.code);
+  listConnections() {
+    // retorna uma lista Array com nome de todas as conexões intanciadas
+    return this._poolConnection.map(obj => obj.code);
   }
 
   addConnection(value) {
-    this._countConnection.push(value);
+    // Add connection to the pool
+    this._poolConnection.push(value);
   }
 
-  get getConnection() {
-    return this._knex;
+  async getConnection(code) {
+    // return a connection instace
+
+    let indexConnection = 0;
+
+    if (this._poolConnection.length > 0) {
+      let thereIsConnection = false;
+
+      for (let index = 0; index < this._poolConnection.length; index += 1) {
+        const element = this._poolConnection[index];
+
+        if (element.code === code) {
+          // _knex = element.knex;
+          indexConnection = index;
+          thereIsConnection = true;
+          break;
+        }
+      }
+      if (!thereIsConnection) {
+        await this._connect(code);
+      }
+    } else {
+      await this._connect(code);
+    }
+
+    return this._poolConnection[indexConnection].knex;
   }
 
-  async connect(code) {
+  async _connect(codeDatabase) {
+    // Internal method for instance of a connection object
     try {
-      this._database = code;
+      const dbConfig = await this._getDatabase(codeDatabase);
+      let _knex = null;
 
-      const dbConfig = await this.getDatabase(this._database);
-
-      // eslint-disable-next-line global-require
       const objConnection = {
-        code: this._database,
+        code: codeDatabase,
         knex: null
       };
 
-      if (this._countConnection.length > 0) {
-        let thereIsConnection = false;
+      _knex = await knex(dbConfig);
 
-        // eslint-disable-next-line no-plusplus
-        for (let index = 0; index < this._countConnection.length; index++) {
-          const element = this._countConnection[index];
+      objConnection.knex = _knex;
+      this.addConnection(objConnection);
 
-          if (element.code === this._database) {
-            this._knex = element.knex;
-            thereIsConnection = true;
-            break;
-          }
-        }
-
-        if (!thereIsConnection) {
-          this._knex = await knex(dbConfig);
-          objConnection.knex = this._knex;
-          this.addConnection(objConnection);
-        }
-      } else {
-        this._knex = await knex(dbConfig);
-        objConnection.knex = this._knex;
-        this.addConnection(objConnection);
-      }
-
-      return this._knex;
+      return _knex;
     } catch (error) {
-      // if (this._knex) this._knex.destroy();
-      throw new ValidationError(`${this._database} database not found!`);
+      throw new ValidationError(`${codeDatabase} database not found!`);
     }
   }
 
-  async isConnected() {
+  async isConnected(code) {
+    // checks if there is a conncetion in the pool
     try {
-      await this._knex.raw("SELECT 1");
+      let thereIsConnection = false;
 
-      return true;
+      for (let index = 0; index < this._poolConnection.length; index += 1) {
+        const element = this._poolConnection[index];
+
+        if (element.code === code) {
+          thereIsConnection = true;
+          break;
+        }
+      }
+
+      return thereIsConnection;
     } catch (e) {
       return false;
     }
   }
 
-  async getDatabase() {
+  async _getDatabase(codeDatabase) {
+    // Internal method for loading connection configuration
     let database;
     try {
       const jsonConection = await fs.readFileSync(
         path.join(__dirname, "/.connections.json")
       );
       const conections = JSON.parse(jsonConection);
-      database = conections[this._database];
+      database = conections[codeDatabase];
       if (!database) {
-        throw new ValidationError(`No databases found, ${this._database}`);
+        throw new ValidationError(`No databases found, ${codeDatabase}`);
       }
     } catch (err) {
       throw new ValidationError("error when trying to connect the databeses!");
@@ -93,7 +109,7 @@ class Connection {
     const conection = {
       client: "postgresql",
       connection: database,
-      searchPath: ["knex", "public"],
+      // searchPath: ["knex", database.schema],
       debug: false,
       acquireConnectionTimeout: 60000,
       // asyncStackTraces: true,
@@ -109,8 +125,32 @@ class Connection {
     return conection;
   }
 
-  async dispose() {
-    if (this._knex) await this._knex.destroy();
+  async dispose(code) {
+    try {
+      const connected = await this.isConnected(code);
+
+      let _knex;
+      if (connected) {
+        const connection = [];
+
+        for (let index = 0; index < this._poolConnection.length; index += 1) {
+          const element = this._poolConnection[index];
+
+          if (element.code !== code) {
+            connection.push(element);
+            break;
+          } else {
+            _knex = element.knex;
+          }
+        }
+        this._poolConnection = connection;
+      }
+      if (_knex) await _knex.destroy();
+
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }
 

@@ -31,17 +31,22 @@ module.exports = app => {
         //     "Não foi possivel conectar ao banco de dados!"
         //   );
 
-        const db = await app.db.connect(this._codeDatabase);
+        //     const conect = await app.db.isConnected(this._codeDatabase);
 
-        // app.db.addConnection("contou");
+        const db = await app.db.getConnection(this._codeDatabase);
+
+        console.log(app.db.listConnections());
 
         // INSTANCIAR CLASSE DE MODELOS
-        const LocalidadeDAO = new app.services.models.citiesDAO.Localidade(db);
+        const LocalidadeDAO = new app.services.models.citiesDAO.Localidade(
+          db,
+          this._schema
+        );
 
         const uf = await LocalidadeDAO.getUF();
 
         // SALVAR CACHE DE DADOS
-        await Repository.set("G_UF", JSON.parse(JSON.stringify(uf)));
+        // await Repository.set("G_UF", JSON.parse(JSON.stringify(uf)));
 
         this._res.status(200).json({ success: true, data: uf });
       } catch (error) {

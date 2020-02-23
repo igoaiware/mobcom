@@ -18,12 +18,7 @@ module.exports = app => {
           next
         );
 
-        // INSTANCIAR DE CONEXÃO PARA CLASSES QUE NÃO USAM CACHE
-        // await controller.connect();
-
         await controller.getUF(next);
-
-        await controller.dispose();
 
         controller = null;
       } catch (e) {

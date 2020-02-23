@@ -1,24 +1,17 @@
 /* eslint-disable no-unused-vars */
 module.exports = app => {
   class Localidade {
-    constructor(connection) {
+    constructor(connection, schema) {
       this._db = connection;
+      this._schema = schema;
     }
 
     async getUF() {
-      const localidade = await this._db("estados")
+      const data = await this._db(`${this._schema}.estados`)
         .select("*")
         .orderBy("nome");
-      return localidade;
-    }
 
-    async getCidade(idUf) {
-      const localidade = await this._db
-        .select("codigo", "nome")
-        .from("cidades")
-        .where({ id_estado: idUf })
-        .orderBy("nome");
-      return localidade;
+      return data;
     }
   }
 
