@@ -4,6 +4,7 @@ const winston = require("winston");
 const uuid = require("uuidv4");
 const dateFormat = require("dateformat");
 const { Connection } = require("./services/config/connection");
+// const rsa = require("./services/class/rsa");
 
 app.log = winston.createLogger({
   level: "debug", // so imprime os logs a nivel de debgue
@@ -26,13 +27,17 @@ app.log = winston.createLogger({
 
 app.db = new Connection("");
 
+// rsa.RsaEncript.generateKey();
+// const enc = rsa.RsaEncript.encrypt("GEDUC", "./.public.pem");
+// console.log("enc", enc);
+
 consign({ extensions: [".js", ".json", ".node"] })
   .include("./services/middlewares/passport.js")
   .then("./services/middlewares/middlewares.js")
   .then("./services/utils/")
   .then("./services/config/connection.js")
   .then("./services/class/baseClass.js")
-  .then("./services/repository")
+  .then("./services/model")
   .then("./services/controller")
   .then("./services/routes")
   .then("./services/config/endPoints.js")

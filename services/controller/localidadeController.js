@@ -1,10 +1,9 @@
 const ValidationError = require("../class/ValidationError");
-const BaseClass = require("../class/baseClass");
+const { Controller } = require("../class/baseController");
 const Repository = require("../class/redis");
-// const ID = require('uuid/v1');
 
 module.exports = app => {
-  class Localidade extends BaseClass.Controller {
+  class Localidade extends Controller {
     // eslint-disable-next-line no-useless-constructor
     constructor(req, res) {
       super(req, res);
@@ -12,38 +11,13 @@ module.exports = app => {
 
     async getUF(next) {
       try {
-        // consultar informação no cache, caso exista retornada dados do cache
-        // const dados = await Repository.get("G_UF");
-
-        // // SE ENCONTRAR DADOS NO CACHE RETORNA E SAI DO METODO
-        // if (dados) {
-        //   // await Repository.del('G_UF');
-        //   this._res
-        //     .status(200)
-        //     .json({ success: true, data: JSON.parse(dados) });
-        //   return;
-        // }
-
-        // // INSTANCIAR CONEXÃO COM BANCO
-        // await this.connect();
-        // if (!this._isConected)
-        //   throw new ValidationError(
-        //     "Não foi possivel conectar ao banco de dados!"
-        //   );
-
-        //     const conect = await app.db.isConnected(this._codeDatabase);
-
-        const db = await app.db.getConnection(this._codeDatabase);
-
-        console.log(app.db.listConnections());
 
         // INSTANCIAR CLASSE DE MODELOS
-        const LocalidadeRepo = new app.services.repository.citiesRepo.Localidade(
-          db,
-          this._schema
+        const UfModel = new app.services.model.localidadeModel.LocalidadeModel(
+          this._codeDatabase
         );
 
-        const uf = await LocalidadeRepo.getUF();
+        const uf = await UfModel.getUF();
 
         // SALVAR CACHE DE DADOS
         // await Repository.set("G_UF", JSON.parse(JSON.stringify(uf)));

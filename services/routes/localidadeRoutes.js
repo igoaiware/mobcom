@@ -12,7 +12,7 @@ module.exports = app => {
         if (!req.headers.code)
           throw new ValidationError("headers[code] not found");
 
-        let controller = new app.services.controller.citiesController.Localidade(
+        let controller = new app.services.controller.localidadeController.Localidade(
           req,
           res,
           next
