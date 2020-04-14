@@ -3,38 +3,33 @@ const Repository = require("../class/redis");
 
 module.exports = app => {
   class LocalidadeModel extends Model {
-    constructor(code) {
+    constructor(code, reload) {
       super(code, app);
+      this._reload = reload || false;
     }
 
     async getUF() {
       // consultar informação no cache, caso exista retornada dados do cache
-      // const dados = await Repository.get("G_UF");
+      const dados =
+        this._reload === false ? await Repository.get("G_UF") : false;
 
       // // SE ENCONTRAR DADOS NO CACHE RETORNA E SAI DO METODO
-      // if (dados) {
-      //   // await Repository.del('G_UF');
-      //   this._res
-      //     .status(200)
-      //     .json({ success: true, data: JSON.parse(dados) });
-      //   return;
-      // }
+      if (dados && !this.reload) {
+        // await Repository.del("G_UF");
+        console.log("DADOS DO CACHE!");
+        return JSON.parse(dados);
+      }
 
-      // // INSTANCIAR CONEXÃO COM BANCO
-      // await this.connect();
-      // if (!this._isConected)
-      //   throw new ValidationError(
-      //     "Não foi possivel conectar ao banco de dados!"
-      //   );
-
-
-
-
+      // INSTANCIAR CONEXÃO COM BANCO
       await this.connection();
+
       const data = await this._connection(`estados`)
         .select("*")
         .orderBy("nome");
 
+      // SALVAR CACHE DE DADOS
+      await Repository.set("G_UF", JSON.parse(JSON.stringify(data)));
+      console.log("DADOS DO BANCO!");
       return data;
     }
   }

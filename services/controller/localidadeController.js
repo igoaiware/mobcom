@@ -7,20 +7,18 @@ module.exports = app => {
     // eslint-disable-next-line no-useless-constructor
     constructor(req, res) {
       super(req, res);
+      this._reload = req.body.reloadData || false;
     }
 
     async getUF(next) {
       try {
-
         // INSTANCIAR CLASSE DE MODELOS
         const UfModel = new app.services.model.localidadeModel.LocalidadeModel(
-          this._codeDatabase
+          this._codeDatabase,
+          this._reload
         );
 
         const uf = await UfModel.getUF();
-
-        // SALVAR CACHE DE DADOS
-        // await Repository.set("G_UF", JSON.parse(JSON.stringify(uf)));
 
         this._res.status(200).json({ success: true, data: uf });
       } catch (error) {
