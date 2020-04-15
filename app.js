@@ -5,7 +5,7 @@ const uuid = require("uuidv4");
 const dateFormat = require("dateformat");
 const { Connection } = require("./services/config/connection");
 // const rsa = require("./services/class/rsa");
-
+// ||
 app.log = winston.createLogger({
   level: "debug", // so imprime os logs a nivel de debgue
   transports: [

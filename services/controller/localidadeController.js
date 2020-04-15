@@ -22,6 +22,8 @@ module.exports = app => {
 
         this._res.status(200).json({ success: true, data: uf });
       } catch (error) {
+        // const err = new Error(error);
+        // err.httpStatusCode = 500;
         next(error);
       }
     }

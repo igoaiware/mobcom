@@ -1,5 +1,4 @@
 const { Model } = require("../class/baseModel");
-const Repository = require("../class/redis");
 
 module.exports = app => {
   class LocalidadeModel extends Model {
@@ -9,15 +8,15 @@ module.exports = app => {
     }
 
     async getUF() {
-      // consultar informação no cache, caso exista retornada dados do cache
-      const dados =
-        this._reload === false ? await Repository.get("G_UF") : false;
+      // consultar informação no cache, caso exista retornada cacheData do cache
+      const cacheData =
+        this._reload === false ? await Model.getCache("G_UF") : false;
 
-      // // SE ENCONTRAR DADOS NO CACHE RETORNA E SAI DO METODO
-      if (dados && !this.reload) {
+      // // SE ENCONTRAR cacheData NO CACHE RETORNA E SAI DO METODO
+      if (cacheData && !this.reload) {
         // await Repository.del("G_UF");
         console.log("DADOS DO CACHE!");
-        return JSON.parse(dados);
+        return JSON.parse(cacheData);
       }
 
       // INSTANCIAR CONEXÃO COM BANCO
@@ -27,8 +26,8 @@ module.exports = app => {
         .select("*")
         .orderBy("nome");
 
-      // SALVAR CACHE DE DADOS
-      await Repository.set("G_UF", JSON.parse(JSON.stringify(data)));
+      // SALVAR CACHE DE cacheData
+      await Model.setCache("G_UF", data);
       console.log("DADOS DO BANCO!");
       return data;
     }
